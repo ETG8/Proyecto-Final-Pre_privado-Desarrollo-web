@@ -1,41 +1,320 @@
 :root {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #18253b;
-  background: #f4f6f8;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #f5f5f7;
+  background: #09090c;
 }
 
-* { box-sizing: border-box; }
-body { margin: 0; min-height: 100vh; }
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, #46090e 0%, transparent 40%),
+    #09090c;
+}
+
+/* CONTENEDOR PRINCIPAL */
+
 .contenedor {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  max-width: 1500px;
+  margin: auto;
+  padding: 30px;
+  align-items: start;
 }
-.encabezado { margin-bottom: 1.5rem; }
-.etiqueta { color: #087e83; font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
-h1 { margin: .25rem 0; font-size: clamp(2rem, 6vw, 3.5rem); }
-.panel { margin: 1rem 0; border: 1px solid #dce2e8; border-radius: 16px; padding: 1.25rem; background: white; box-shadow: 0 10px 28px #18253b0d; }
-form {
-    display: grid;
-    gap: .65rem;
-    border: 2px solid #830808;
-    padding: 2rem;
-    margin: 1.5rem;
-    background-color: rgba(56, 185, 6, 0.345);
-}
-label { margin-top: .45rem; font-weight: 700; }
-input, select { width: 100%; min-height: 44px; border: 1px solid #aeb9c7; border-radius: 9px; padding: .65rem .75rem; background: white; font: inherit; }
-input:focus, select:focus { outline: 3px solid #bde1d8; border-color: #087e83; }
-button { min-height: 46px; margin-top: .5rem; border: 0; border-radius: 9px; padding: .7rem 1rem; color: white; background: #087e83; font: inherit; font-weight: 800; cursor: pointer; }
-button:hover { background: #06656b; }
-.mensaje { min-height: 1.5em; color: #06656b; font-weight: 700; }
-#lista-inscripciones { display: grid; gap: .6rem; padding-left: 1.25rem; }
-#lista-inscripciones li { padding: .6rem; border-radius: 8px; background: #eef9f6; }
-.vacio { color: #647188; background: transparent !important; }
 
-/* TODO: Agrega aquí una regla @media para mejorar la vista en teléfonos. */
-@media (max-width: 640px) {
+/* ENCABEZADO Y LOGOTIPO */
+
+.encabezado {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.logo-etg {
+  display: block;
+  width: min(100%, 350px);
+  height: auto;
+  margin: 0 auto 25px;
+  filter: drop-shadow(0 0 24px rgba(229, 9, 20, 0.3));
+}
+
+.etiqueta {
+  color: #ff333d;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+h1 {
+  color: #ffffff;
+  font-size: clamp(28px, 4vw, 45px);
+  margin: 15px 0;
+  line-height: 1.15;
+}
+
+.encabezado > p:not(.etiqueta) {
+  color: #bfc3cc;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* PANELES */
+
+.panel {
+  min-width: 0;
+  background: #16161d;
+  border: 1px solid #383840;
+  border-radius: 18px;
+  padding: 26px;
+  margin: 0 0 20px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+}
+
+.panel h2 {
+  color: #ffffff;
+  font-size: 24px;
+  margin-top: 0;
+  margin-bottom: 22px;
+  border-left: 5px solid #e50914;
+  padding-left: 12px;
+}
+
+/* FORMULARIO */
+
+.formulario-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+form {
+  background: #202027;
+  border: 1px solid #4a3438;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 0 0 20px;
+}
+
+.campo {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+label {
+  display: block;
+  color: #f4f4f6;
+  font-weight: 650;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+/* CAMPOS */
+
+input,
+select,
+textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 11px 13px;
+  color: #f5f5f7;
+  background: #111116;
+  border: 1px solid #555560;
+  border-radius: 9px;
+  font: inherit;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid #e50914;
+  outline-offset: 1px;
+  border-color: #e50914;
+}
+
+input::placeholder {
+  color: #9797a1;
+}
+
+/* BOTONES */
+
+button {
+  min-height: 44px;
+  padding: 11px 18px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 9px;
+  background: #d60913;
+  color: white;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+button:hover {
+  background: #fa1722;
+  transform: translateY(-1px);
+}
+
+button:focus-visible {
+  outline: 3px solid #ff6570;
+  outline-offset: 3px;
+}
+
+/* BOTÓN DE REGISTRO FUERA DEL FORMULARIO */
+
+.panel > button[type="submit"] {
+  display: inline-block;
+  width: auto;
+  margin: 0 0 12px;
+  padding: 12px 20px;
+  background: #e50914;
+  color: white;
+}
+
+/* MENSAJES */
+
+.mensaje {
+  min-height: 1.5em;
+  color: #ff8188;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* PARTICIPANTES */
+
+#lista-inscripciones {
+  display: grid;
+  gap: 14px;
+  padding-left: 20px;
+}
+
+#lista-inscripciones li {
+  min-width: 0;
+  padding: 18px;
+  background: #22222b;
+  border: 1px solid #494952;
+  border-left: 4px solid #e50914;
+  border-radius: 12px;
+  color: #eeeeef;
+  overflow-wrap: anywhere;
+}
+
+#lista-inscripciones li p {
+  line-height: 1.6;
+}
+
+#lista-inscripciones button {
+  margin-right: 10px;
+}
+
+.vacio {
+  color: #bfc3cc;
+}
+
+/* REPORTES */
+
+.panel-reportes {
+  grid-column: 1 / -1;
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.tarjeta {
+  min-width: 0;
+  padding: 24px;
+  background: #202027;
+  border: 1px solid #46464e;
+  border-radius: 14px;
+}
+
+.tarjeta h2,
+.tarjeta h3 {
+  color: #f5f5f7;
+  margin-top: 0;
+  font-size: 18px;
+}
+
+#total {
+  color: #ff303b;
+  font-size: 48px;
+  font-weight: 900;
+  margin: 15px 0;
+}
+
+.resumen ul {
+  list-style: none;
+  padding: 0;
+}
+
+.resumen li {
+  margin: 15px 0;
+  color: #e7e7ea;
+  overflow-wrap: anywhere;
+}
+
+.barra-fondo {
+  height: 14px;
+  background: #393941;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.barra {
+  height: 100%;
+  background: linear-gradient(90deg, #98000a, #ff303b);
+  border-radius: 20px;
+  transition: width 0.3s ease;
+}
+
+/* DISEÑO RESPONSIVE */
+
+@media (max-width: 900px) {
   .contenedor {
     grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .encabezado {
+    padding: 20px 10px;
+  }
+
+  .logo-etg {
+    width: min(75%, 280px);
+  }
+}
+
+@media (max-width: 600px) {
+  .resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .panel {
+    padding: 18px;
+  }
+
+  form {
+    padding: 16px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  #lista-inscripciones button {
+    margin-bottom: 6px;
   }
 }

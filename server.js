@@ -1,59 +1,198 @@
 const express = require("express");
 const path = require("path");
+const db = require("./database");
+
 const app = express();
 const PORT = 3000;
 
-// Guardar inscripciones temporalmente
-const inscripciones = [];
-
+// Configuración de Express
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// GET: consultar inscripciones
-app.get("/api/inscripciones", (req, res) => {
-  res.json(inscripciones);
-});
+// Función para validar los datos
+function validarDatos(cuerpo = {}) {
+  const texto = (valor) =>
+    typeof valor === "string" ? valor.trim() : "";
 
-// POST: registrar una inscripción
-app.post("/api/inscripciones", (req, res) => {
-
-  // TODO 1: Obtener los cinco datos
-  const { nombre, correo, telefono, taller, horario } = req.body || {};
-
-  // TODO 2: Validar campos obligatorios
-  if ([nombre, correo, telefono, taller, horario].some(
-    dato => typeof dato !== "string" || !dato.trim()
-  )) {
-    return res.status(400).json({
-      mensaje: "Todos los campos son obligatorios."
-    });
-  }
-
-  // TODO 3: Validar correo electrónico
-  const validarCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (!validarCorreo.test(correo)) {
-    return res.status(400).json({
-      mensaje: "El correo electrónico no es válido."
-    });
-  }
-
-  // TODO 4: Crear y guardar el registro
-  const nuevaInscripcion = {
-    id: inscripciones.length + 1,
-    nombre: nombre.trim(),
-    correo: correo.trim(),
-    telefono: telefono.trim(),
-    taller: taller.trim(),
-    horario: horario.trim()
+  const datos = {
+    nombre: texto(cuerpo.nombre),
+    correo: texto(cuerpo.correo),
+    telefono: texto(cuerpo.telefono),
+    taller: texto(cuerpo.taller),
+    horario: texto(cuerpo.horario),
+    modalidad: texto(cuerpo.modalidad),
+    nivel_experiencia: texto(cuerpo.nivel_experiencia)
   };
 
-  inscripciones.push(nuevaInscripcion);
+  if (Object.values(datos).some(valor => !valor)) {
+    return {
+      error: "Completa todos los campos."
+    };
+  }
 
-  // TODO 5: Responder con estado 201
-  res.status(201).json(nuevaInscripcion);
+  const correoValido =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.correo);
+
+  if (!correoValido) {
+    return {
+      error: "Escribe un correo válido."
+    };
+  }
+
+  return { datos };
+}
+
+// GET: consultar las inscripciones
+app.get("/api/inscripciones", (req, res) => {
+  const filas = db.prepare(
+    "SELECT id, nombre, correo, telefono, taller, " +
+    "horario, modalidad, nivel_experiencia, fecha_registro " +
+    "FROM inscripciones ORDER BY id DESC"
+  ).all();
+
+  res.json(filas);
 });
 
+// POST: registrar participantes
+app.post("/api/inscripciones", (req, res) => {
+  const validacion = validarDatos(req.body);
+
+  if (validacion.error) {
+    return res.status(400).json({
+      error: validacion.error
+    });
+  }
+
+  const datos = validacion.datos;
+
+  const insertar = db.prepare(
+    "INSERT INTO inscripciones " +
+    "(nombre, correo, telefono, taller, horario, " +
+    "modalidad, nivel_experiencia) " +
+    "VALUES (?, ?, ?, ?, ?, ?, ?)"
+  );
+
+  const resultado = insertar.run(
+    datos.nombre,
+    datos.correo,
+    datos.telefono,
+    datos.taller,
+    datos.horario,
+    datos.modalidad,
+    datos.nivel_experiencia
+  );
+
+  res.status(201).json({
+    mensaje: "Inscripción guardada.",
+    id: Number(resultado.lastInsertRowid)
+  });
+});
+
+// PUT: actualizar participantes
+app.put("/api/inscripciones/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  if (!Number.isInteger(id) || id < 1) {
+    return res.status(400).json({
+      error: "Id inválido."
+    });
+  }
+
+  const validacion = validarDatos(req.body);
+
+  if (validacion.error) {
+    return res.status(400).json({
+      error: validacion.error
+    });
+  }
+
+  const datos = validacion.datos;
+
+  const resultado = db.prepare(
+    "UPDATE inscripciones SET nombre=?, correo=?, " +
+    "telefono=?, taller=?, horario=?, modalidad=?, " +
+    "nivel_experiencia=? WHERE id=?"
+  ).run(
+    datos.nombre,
+    datos.correo,
+    datos.telefono,
+    datos.taller,
+    datos.horario,
+    datos.modalidad,
+    datos.nivel_experiencia,
+    id
+  );
+
+  if (resultado.changes === 0) {
+    return res.status(404).json({
+      error: "No se encontró la inscripción."
+    });
+  }
+
+  res.json({
+    mensaje: "Inscripción actualizada."
+  });
+});
+
+// DELETE: eliminar participantes
+app.delete("/api/inscripciones/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  if (!Number.isInteger(id) || id < 1) {
+    return res.status(400).json({
+      error: "Id inválido."
+    });
+  }
+
+  const resultado = db.prepare(
+    "DELETE FROM inscripciones WHERE id = ?"
+  ).run(id);
+
+  if (resultado.changes === 0) {
+    return res.status(404).json({
+      error: "No se encontró la inscripción."
+    });
+  }
+
+  res.json({
+    mensaje: "Inscripción eliminada."
+  });
+});
+
+// GET: reportes visuales
+app.get("/api/reportes/resumen", (req, res) => {
+
+  const total = db.prepare(
+    "SELECT COUNT(*) AS total FROM inscripciones"
+  ).get().total;
+
+  const porTaller = db.prepare(
+    "SELECT taller, COUNT(*) AS cantidad " +
+    "FROM inscripciones " +
+    "GROUP BY taller ORDER BY cantidad DESC"
+  ).all();
+
+  const porHorario = db.prepare(
+    "SELECT horario, COUNT(*) AS cantidad " +
+    "FROM inscripciones " +
+    "GROUP BY horario ORDER BY horario"
+  ).all();
+
+  const porModalidad = db.prepare(
+    "SELECT modalidad, COUNT(*) AS cantidad " +
+    "FROM inscripciones " +
+    "GROUP BY modalidad ORDER BY cantidad DESC"
+  ).all();
+
+  res.json({
+    total,
+    porTaller,
+    porHorario,
+    porModalidad
+  });
+});
+
+// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor disponible en http://localhost:${PORT}`);
 });

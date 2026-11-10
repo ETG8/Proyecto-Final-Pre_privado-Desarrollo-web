@@ -10,6 +10,11 @@
 <body>
   <main class="contenedor">
     <header class="encabezado">
+      <img
+  src="logo-etg.png"
+  alt="Logotipo ETG"
+  class="logo-etg"
+>
       <p class="etiqueta">Universidad · Actividad de clase</p>
       <h1>Registro al taller</h1>
       <p>Completa tus datos para reservar un espacio.</p>
@@ -17,7 +22,7 @@
 
     <section class="panel" aria-labelledby="titulo-formulario">
       <h2 id="titulo-formulario">Datos de inscripción</h2>
-      <form id="formulario-registro">
+      <form id="formulario-registro" class="formulario-grid">
         <label for="nombre">Nombre completo</label>
         <input id="nombre" name="nombre" type="text" required minlength="2" autocomplete="name">
 
@@ -44,25 +49,32 @@
             <option value="Nocturna 07 pm - 11 pm">Nocturna 07 pm - 11 pm</option>
          </select>
 
-         <fieldset>
-  <legend>Sexo</legend>
+         <div class="campo">
+  <label for="modalidad">Modalidad</label>
+  <select id="modalidad" name="modalidad" required>
+    <option value="">Selecciona una opción</option>
+    <option value="Presencial">Presencial</option>
+    <option value="Virtual">Virtual</option>
+  </select>
+</div>
 
-  <label for="masculino">
-    <input id="masculino" type="radio" name="sexo" value="Masculino">
-    Masculino
-  </label>
+<div class="campo">
+  <label for="nivel_experiencia">Experiencia previa</label>
+  <select id="nivel_experiencia" name="nivel_experiencia" required>
+    <option value="">Selecciona un nivel</option>
+    <option value="Inicial">Inicial</option>
+    <option value="Intermedio">Intermedio</option>
+  </select>
+</div>
 
-  <label for="femenino">
-    <input id="femenino" type="radio" name="sexo" value="Femenino">
-    Femenino
-  </label>
-</fieldset>
+</form>
 
+<button type="submit" form="formulario-registro">
+  Registrar inscripción
+</button>
 
-        <button type="submit">Registrar inscripción</button>
-      </form>
-      <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
-    </section>
+<p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
+</section>
 
     <section class="panel" aria-labelledby="titulo-lista">
       <h2 id="titulo-lista">Participantes inscritos</h2>
@@ -70,6 +82,32 @@
         <li class="vacio">Aún no hay inscripciones.</li>
       </ul>
     </section>
+
+    <section class="panel panel-reportes" aria-labelledby="titulo-reportes">
+  <h2 id="titulo-reportes">Reportes de inscripciones</h2>
+
+  <div class="resumen">
+    <article class="tarjeta">
+      <h3>Total de inscripciones</h3>
+      <p id="total">0</p>
+    </article>
+
+    <article class="tarjeta">
+      <h3>Inscripciones por taller</h3>
+      <ul id="reporte-talleres"></ul>
+    </article>
+
+    <article class="tarjeta">
+      <h3>Inscripciones por horario</h3>
+      <ul id="reporte-horarios"></ul>
+    </article>
+
+    <article class="tarjeta">
+      <h3>Inscripciones por modalidad</h3>
+      <ul id="reporte-modalidades"></ul>
+    </article>
+  </div>
+</section>
   </main>
 </body>
 <script>
